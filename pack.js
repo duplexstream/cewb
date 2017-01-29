@@ -44,10 +44,18 @@ const addEntriesToConfig = (target, base) => (file) => {
     .replace(/\.ext/, '')
     .replace(/\//g, '--')
     .slice(0, -3)
+
   config.entry[entry] = [
     'babel-polyfill',
     `./${relativePath}`
   ]
+
+  if (DEV && entry === 'background') {
+    config.entry[entry] = [
+      '../reload.js',
+      ...config.entry[entry]
+    ]
+  }
 }
 
 const getWebpackEntries = (target, base) => {
