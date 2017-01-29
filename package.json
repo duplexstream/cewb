@@ -17,5 +17,8 @@
   "scripts": {
     "start": "node pack development",
     "build": "node pack"
+  },
+  "bin": {
+    "cewb": "pack.js"
   }
 }
