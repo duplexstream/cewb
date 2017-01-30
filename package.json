@@ -18,5 +18,10 @@
   "license": "MIT",
   "bin": {
     "cewb": "pack.js"
+  },
+  "babel": {
+    "presets": [
+      "latest"
+    ]
   }
 }
