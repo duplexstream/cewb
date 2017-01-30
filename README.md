@@ -1,4 +1,5 @@
-# Chrome Extension + Webpack + Babel (cewb)
+# cewb
+Build Chrome Extensions with Webpack + Babel 
 
 ## Features
 
@@ -37,8 +38,8 @@ Example `package.json`:
 {
   "name": "my-extension",
   "scripts": {
-    "dev": "cewb development",
-    "pack": "cewb"
+    "dev": "cewb",
+    "prod": "cewb -p"
   }
 }
 ```
@@ -55,4 +56,4 @@ After you've run `npm run dev` for the first time, goto `chrome://extensions` in
 
 ### Production
 
-Running `npm run pack` will do everything `npm run dev` does but instead of outputting files to `unpacked`, it packages the extension into `<package-name>.zip` file. 
+Running `npm run prod` will do everything `npm run dev` does but instead of outputting files to `unpacked`, it packages the extension into `<package-name>.zip` file. 
