@@ -1,14 +1,5 @@
 {
   "name": "cewb",
-  "devDependencies": {
-    "babel-core": "^6.22.1",
-    "babel-loader": "^6.2.10",
-    "fs-promise": "^1.0.0",
-    "jszip": "^3.1.3",
-    "memory-fs": "^0.4.1",
-    "webpack": "2.2",
-    "ws": "^1.1.1"
-  },
   "version": "0.1.0",
   "repository": {
     "type": "git",
@@ -17,6 +8,21 @@
   "author": "Adam Snodgrass <overra@gmail.com>",
   "license": "MIT",
   "bin": {
-    "cewb": "pack.js"
+    "cewb": "bin/cewb.js"
+  },
+  "babel": {
+    "presets": [
+      "latest"
+    ]
+  },
+  "dependencies": {
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "fs-promise": "^1.0.0",
+    "jszip": "^3.1.3",
+    "memory-fs": "^0.4.1",
+    "webpack": "2.2",
+    "ws": "^1.1.1",
+    "yargs": "^6.6.0"
   }
 }
