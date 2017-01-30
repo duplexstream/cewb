@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const webpack = require('webpack')
 const MemoryFS = require('memory-fs')
 const JSZip = require('jszip')
@@ -8,10 +10,11 @@ const { Server: WebSocketServer } = require('ws')
 const pkg = require('./package')
 const webpackConfig = require('./webpack.config')
 
-const config = webpackConfig(process.argv[2])
 const DEV = process.argv[2] === 'development'
-const assetsPath = resolve(__dirname, './assets')
+const config = webpackConfig(process.argv[2])
+const assetsPath = resolve(process.cwd(), 'assets')
 const memoryFs = new MemoryFS()
+
 let sockets = []
 
 const mapFilenameToContents = (file) =>
@@ -23,7 +26,7 @@ const mapFilesToStats = (target) => (file) =>
 const reduceFilesToTree = (path) => (tree, file) =>
   Object.assign({}, tree, {[`${path}/${file.file}`]: file.contents})
 
-const getNestedEntries = (files, target, base) => Promise.all(files.map((file) => {
+const getNestedEntries = (target, base) => (files) => Promise.all(files.map((file) => {
   const path = resolve(target, file.file)
   const isDirectory = file.stats.isDirectory()
   if (isDirectory) {
@@ -44,10 +47,18 @@ const addEntriesToConfig = (target, base) => (file) => {
     .replace(/\.ext/, '')
     .replace(/\//g, '--')
     .slice(0, -3)
+
   config.entry[entry] = [
-    'babel-polyfill',
-    `./${relativePath}`
+    require.resolve('babel-polyfill'),
+    './' + relativePath
   ]
+
+  if (DEV && entry === 'background') {
+    config.entry[entry] = [
+      resolve(__dirname, 'reload.js'),
+      ...config.entry[entry]
+    ]
+  }
 }
 
 const getWebpackEntries = (target, base) => {
@@ -65,17 +76,17 @@ const getWebpackEntries = (target, base) => {
 }
 
 const addManifestFile = (files) => {
-  return fs.readFile(resolve(__dirname, 'manifest.json'))
+  return fs.readFile(resolve(process.cwd(), 'manifest.json'))
     .then((contents) => Object.assign({}, files, {'manifest.json': contents}))
 }
 
 const outputFiles = (files) => {
   if (DEV) {
-    return fs.remove(resolve(__dirname, 'unpacked'))
+    return fs.remove(resolve(process.cwd(), 'unpacked'))
       .then(() =>
         Object.keys(files).reduce((promise, file) => (
           promise.then(() =>
-            fs.outputFile(resolve(__dirname, 'unpacked', file), files[file])
+            fs.outputFile(resolve(process.cwd(), 'unpacked', file), files[file])
           )
         ), Promise.resolve())
       )
@@ -98,9 +109,9 @@ const outputFiles = (files) => {
 
 const finishedCompiling = (err, stats) => {
   console.log(stats.toString({colors: true}))
-  const src = memoryFs.readdirSync(resolve(__dirname, 'dist'))
+  const src = memoryFs.readdirSync(resolve(process.cwd(), 'dist'))
     .reduce((tree, file) => {
-      const filename = resolve(__dirname, `dist/${file}`)
+      const filename = resolve(process.cwd(), `dist/${file}`)
       tree[file.replace(/\-\-/g, '/')] = memoryFs.readFileSync(filename)
       return tree
     }, {})
@@ -137,7 +148,7 @@ function startCompiler() {
   compiler.outputFileSystem = memoryFs
 }
 
-getWebpackEntries(resolve(__dirname, 'src'))
+getWebpackEntries(resolve(process.cwd(), 'src'))
   // .then(() => console.log(config.entry))
   .then(() => startCompiler())
   .catch((err) => console.log(err))

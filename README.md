@@ -10,27 +10,49 @@
 ## Installation
 
 ```sh
-git clone https://github.com/duplexstream/cewb.git
-cd cewb
-npm install
+npm install --dev cewb
+# or
+yarn add --dev cewb
 ```
 
 ## Usage
 
-### File naming
+Example directory structure:
 
-To differentiate between files that are to be used in `manifest.json` and files that are dependencies of the former, we add `.ext` before the `.js` in the filename. When `pack.js` runs, it looks for every file that matches the pattern of `/\.ext\.js$/` and adds those to the `entry` property in the webpack config after stripping the `.ext` from the filename.  
+```
+  + /project-directory
+  |-+ /assets
+  | '-- /icon.png
+  |-- /manifest.json
+  |-- /package.json
+  '-+ /src
+    |-- /background.ext.js
+    |-- /utils.js
+    '-- /injectedScript.ext.js
+```
 
-### Development
-
-Running `npm start` will gather all the static assets, transpile all source files, output these files to a directory named `unpacked` and then watch all files under `src` for live reloading.
-
-Live reloading relies on the following code to be placed in the `background.ext.js` file.
+Example `package.json`:  
 
 ```js
-if (window.DEV) {
-  require('../reload')(34343) // where 34343 is the port of the live reload WebSocket
+{
+  "name": "my-extension",
+  "scripts": {
+    "dev": "cewb development",
+    "pack": "cewb"
+  }
 }
 ```
 
-After you've run `npm start` for the first time, goto `chrome://extensions` in Chrome, ensure "Developer mode" is checked, click "Load unpacked extension...", locate and select your extensions `unpacked` folder and you're ready to go! 
+### File naming
+
+Any file that ends with `.ext.js` will be added to webpack's entries object and therefore will be accessible by `manifest.json`. 
+
+### Development
+
+Running `npm run dev` will take all the static assets, transpile all source files, output these files to a directory named `unpacked` and then watch all files under `src` for live reloading.
+
+After you've run `npm run dev` for the first time, goto `chrome://extensions` in Chrome, ensure "Developer mode" is checked, click "Load unpacked extension...", locate and select your extensions `unpacked` folder and you're ready to go!
+
+### Production
+
+Running `npm run pack` will do everything `npm run dev` does but instead of outputting files to `unpacked`, it packages the extension into `<package-name>.zip` file. 

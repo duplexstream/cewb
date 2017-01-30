@@ -5,16 +5,16 @@ module.exports = (env) => {
   const DEV = env === 'development'
   const config = {
     devtool: DEV ? 'source-map' : false,
-    context: resolve(__dirname, 'src'),
+    context: resolve(process.cwd(), 'src'),
     entry: {},
     output: {
       filename: '[name].js',
-      path: resolve(__dirname, 'dist')
+      path: resolve(process.cwd(), 'dist')
     },
     module: {
       loaders: [
         {
-          loader: 'babel-loader',
+          loader: require.resolve('babel-loader'),
           exclude: [
             /node_modules/
           ],
