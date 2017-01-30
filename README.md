@@ -26,10 +26,11 @@ Example directory structure:
   | '-- /icon.png
   |-- /manifest.json
   |-- /package.json
-  '-+ /src
-    |-- /background.ext.js
-    |-- /utils.js
-    '-- /injectedScript.ext.js
+  |-+ /src
+  | |-- /background.ext.js
+  | |-- /utils.js
+  | '-- /injectedScript.ext.js
+  '-- /webpack.js
 ```
 
 Example `package.json`:  
@@ -47,6 +48,20 @@ Example `package.json`:
 ### File naming
 
 Any file that ends with `.ext.js` will be added to webpack's entries object and therefore will be accessible by `manifest.json`. 
+
+### Customize webpack configuration
+
+Example `webpack.js`:
+
+```js
+module.exports = (config, env) => {
+  if (env === 'development') {
+    config.plugins.push(new WebpackPlugin())
+  }
+
+  return config
+}
+```
 
 ### Development
 
